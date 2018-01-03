@@ -1,15 +1,25 @@
 version: '2'
 services:
+  redisdb:
+    image: busybox
+    volumes:
+      - /var/lib/redis
+
+  redis:
+    image: "redis:alpine"
+    volumes_from:
+      - redisdb
+    ports:
+      - "6379:6379"
+
   api:
     # build: ./ apuntando a Dockerfile
     build: ./Docker/api
-
     image: nodeapp:latest
-    
     labels:
       com.app-demo-infra.web.description: "Node API"
-      
     ports:
       - "3000:3000"
-      
+    links:
+      - redis
     command: [npm, start]
